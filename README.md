@@ -1,0 +1,2 @@
+# gemini_for_webdriver
+Geminiを使ってWebDriverを操作する
