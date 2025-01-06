@@ -9,12 +9,12 @@ from vertexai.preview.generative_models import (
 # Function Callingで呼び出すメソッド
 
 
-def open_window(url, action) -> str:
-    if action == "Microsoft Edge":
+def open_window(url, browser) -> str:
+    if browser == "Microsoft Edge":
         url = f"microsoft-edge:{url}"
-    elif action == "Google Chrome":
+    elif browser == "Google Chrome":
         url = f"googlechrome:{url}"
-    elif action == "Firefox":
+    elif browser == "Firefox":
         url = f"firefox:{url}"
     else:
         url = f"{url}"
@@ -41,7 +41,7 @@ open_window_func = FunctionDeclaration(
                 "type": "string",
                 "description": "URL"
             },
-            "action": {
+            "browser": {
                 "type": "string",
                 "description": "ブラウザで開く"
             }
@@ -68,8 +68,7 @@ def function_calling(prompt) -> dict:
 
 if __name__ == "__main__":
 
-    # prompt = "https://www.google.com/ をMicrosoft Edgeのウィンドウで開く"
-    prompt = "https://www.google.com/ をSafariのウィンドウで開く"
+    prompt = "https://www.google.com/ をGoogle Chromeのウィンドウで開く"
     response = function_calling(prompt)
     print("------")
     if response.candidates[0].content.parts[0].function_call.name:
@@ -78,7 +77,7 @@ if __name__ == "__main__":
         print(
             f"必要な引数 : {response.candidates[0].content.parts[0].function_call.args.get('url')}")
         print(
-            f"必要な引数 : {response.candidates[0].content.parts[0].function_call.args.get('action')}")
+            f"必要な引数 : {response.candidates[0].content.parts[0].function_call.args.get('browser')}")
     else:
         print("最適な関数 : 何もなし")
 
@@ -90,8 +89,8 @@ if __name__ == "__main__":
         url = response.candidates[0].content.parts[0].function_call.args.get(
             "url")
 
-        action = response.candidates[0].content.parts[0].function_call.args.get(
-            "action")
+        browser = response.candidates[0].content.parts[0].function_call.args.get(
+            "browser")
 
         # 実行可能な関数
         available_functions = {
@@ -100,7 +99,7 @@ if __name__ == "__main__":
         exec_function = available_functions[function_name]
 
         # 関数を実行
-        function_response = exec_function(url, action)
+        function_response = exec_function(url, browser)
         print(f"{function_response}")
     else:
         print("最適な関数 : 何もなし")
