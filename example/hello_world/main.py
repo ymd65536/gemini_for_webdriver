@@ -31,12 +31,12 @@ def open_window(url, browser) -> str:
             headers={'Content-Type': 'application/json'},
             data='{"url": "' + url + '"}'
         ).json()
-        return res
+        return sessionId
     elif browser == "Firefox":
         url = f"firefox:{url}"
     else:
         url = f"{url}"
-    return url
+    return None
 
 
 PROJECT_ID = os.getenv("PROJECT_ID")
@@ -118,6 +118,8 @@ if __name__ == "__main__":
 
         # 関数を実行
         function_response = exec_function(url, browser)
-        print(f"{function_response}")
+        if function_response is not None:
+            print("関数の実行結果 : ", function_response)
+
     else:
         print("最適な関数 : 何もなし")
