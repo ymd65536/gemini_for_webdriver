@@ -1,3 +1,5 @@
+import requests
+import config.const as const
 import os
 import vertexai
 from vertexai.preview.generative_models import (
@@ -13,7 +15,23 @@ def open_window(url, browser) -> str:
     if browser == "Microsoft Edge":
         url = f"microsoft-edge:{url}"
     elif browser == "Google Chrome":
-        url = f"googlechrome:{url}"
+        res = requests.post(
+            const.WEB_DRIVER_URL,
+            headers={'Content-Type': 'application/json'},
+            data='{"capabilities":{}}'
+        ).json()
+
+        # セッションIDを取得
+        sessionId = res.get("value").get("sessionId")
+        while sessionId is None:
+            os.wait(1)
+
+        res = requests.post(
+            "".join([const.WEB_DRIVER_URL, '/', sessionId, '/url']),
+            headers={'Content-Type': 'application/json'},
+            data='{"url": "' + url + '"}'
+        ).json()
+        return res
     elif browser == "Firefox":
         url = f"firefox:{url}"
     else:
