@@ -23,9 +23,6 @@ def open_window(url, browser) -> str:
 
         # セッションIDを取得
         sessionId = res.get("value").get("sessionId")
-        while sessionId is None:
-            os.wait(1)
-
         res = requests.post(
             "".join([const.WEB_DRIVER_URL, '/', sessionId, '/url']),
             headers={'Content-Type': 'application/json'},
@@ -76,6 +73,8 @@ webdriver_tool = Tool(
 
 
 def function_calling(prompt) -> dict:
+    if const.WEB_DRIVER_URL is None:
+        raise ValueError("WEBDRIVER_PORT is not set")
     response = model.generate_content(
         prompt,
         generation_config={"temperature": 0},
@@ -87,18 +86,6 @@ def function_calling(prompt) -> dict:
 if __name__ == "__main__":
 
     prompt = "https://www.google.com/ をGoogle Chromeのウィンドウで開く"
-    response = function_calling(prompt)
-    print("------")
-    if response.candidates[0].content.parts[0].function_call.name:
-        print(
-            f"最適な関数 : {response.candidates[0].content.parts[0].function_call.name}")
-        print(
-            f"必要な引数 : {response.candidates[0].content.parts[0].function_call.args.get('url')}")
-        print(
-            f"必要な引数 : {response.candidates[0].content.parts[0].function_call.args.get('browser')}")
-    else:
-        print("最適な関数 : 何もなし")
-
     response = function_calling(prompt)
 
     if response.candidates[0].content.parts[0].function_call:
@@ -119,7 +106,7 @@ if __name__ == "__main__":
         # 関数を実行
         function_response = exec_function(url, browser)
         if function_response is not None:
-            print("関数の実行結果 : ", function_response)
+            print("実行結果 : ", function_response)
 
     else:
-        print("最適な関数 : 何もなし")
+        print("最適なアクションなし")
