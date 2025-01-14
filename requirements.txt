@@ -1,2 +1,1 @@
-requests
-vertexai
+vertexai==1.71.1
