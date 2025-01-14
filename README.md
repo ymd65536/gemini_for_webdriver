@@ -14,6 +14,13 @@ PROJECT_ID=`gcloud config list --format 'value(core.project)'` && echo $PROJECT_
 pip install -r requirements.txt
 ```
 
+## Set Environment Variables
+
+```bash
+export PROJECT_ID=<your-project-id>
+export LOCATION=<your-location>
+```
+
 ## Run the Project
 
 ```bash
